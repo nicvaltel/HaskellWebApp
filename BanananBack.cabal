@@ -26,7 +26,6 @@ library
   exposed-modules:
       Adapter.InMemory.Auth
       Adapter.PostgreSQL.Auth
-      Connection
       Domain.Auth
       Domain.Validation
       Lib

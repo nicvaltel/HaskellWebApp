@@ -19,6 +19,7 @@ module Reexport
   , module System.IO
   , module Control.Exception
   , module Data.ByteString
+  , module Data.Has
   ) where
 
 
@@ -45,5 +46,6 @@ import Katip (Katip(..), LogEnv(..), KatipContext(..), Severity(..), logTM, kati
 import System.IO (stdout)
 import Control.Exception (bracket, try)
 import Data.ByteString(ByteString)
+import Data.Has (Has (getter))
 
 
