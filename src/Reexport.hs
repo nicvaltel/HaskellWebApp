@@ -3,6 +3,7 @@ module Reexport
   , module Control.Monad
   , module Data.Text
   , module Data.Text.IO
+  , module Text.Printf
   , module Data.Maybe
   , module Control.Monad.Except
   , module Control.Monad.Trans
@@ -20,6 +21,7 @@ module Reexport
   , module Control.Exception
   , module Data.ByteString
   , module Data.Has
+  , module Data.Either.Combinators
   ) where
 
 
@@ -27,6 +29,7 @@ import Prelude hiding (putStrLn)
 import Control.Monad (void, when)
 import Data.Text(Text)
 import Data.Text.IO (putStrLn)
+import Text.Printf (printf)
 import Data.Maybe(maybeToList)
 import Control.Monad.Except (runExceptT, ExceptT (ExceptT), MonadError(..))
 import Control.Monad.Trans (lift)
@@ -47,5 +50,6 @@ import System.IO (stdout)
 import Control.Exception (bracket, try)
 import Data.ByteString(ByteString)
 import Data.Has (Has (getter))
+import Data.Either.Combinators (maybeToRight)
 
 

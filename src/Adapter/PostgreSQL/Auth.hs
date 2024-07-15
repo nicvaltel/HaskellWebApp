@@ -98,7 +98,7 @@ findEmailFromUserId uId = do
 
 
   where
-    qry = "select email from auths where id = ?"
+    qry = "select cast(email as text) from auths where id = ?"
 
 
 

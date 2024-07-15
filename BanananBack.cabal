@@ -26,6 +26,7 @@ library
   exposed-modules:
       Adapter.InMemory.Auth
       Adapter.PostgreSQL.Auth
+      Adapter.Redis.Auth
       Domain.Auth
       Domain.Validation
       Lib
@@ -51,6 +52,9 @@ library
     , classy-prelude
     , containers
     , data-has
+    , dotenv
+    , either
+    , hedis
     , katip
     , mtl
     , pcre-heavy
@@ -85,6 +89,9 @@ executable BanananBack-exe
     , classy-prelude
     , containers
     , data-has
+    , dotenv
+    , either
+    , hedis
     , katip
     , mtl
     , pcre-heavy
@@ -120,6 +127,9 @@ test-suite BanananBack-test
     , classy-prelude
     , containers
     , data-has
+    , dotenv
+    , either
+    , hedis
     , katip
     , mtl
     , pcre-heavy

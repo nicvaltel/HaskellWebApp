@@ -35,6 +35,9 @@ dependencies:
 - postgresql-simple
 - postgresql-simple-migration
 - time
+- hedis
+- dotenv
+- either
 
 default-extensions:
 - NoImplicitPrelude
