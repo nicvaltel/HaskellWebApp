@@ -1,10 +1,10 @@
 cradle:
   cabal:
     - path: "src"
-      component: "lib:BanananBack"
+      component: "lib:Quorum"
 
     - path: "app/Main.hs"
-      component: "BanananBack:exe:BanananBack-exe"
+      component: "Quorum:exe:Quorum-exe"
 
     - path: "test"
-      component: "BanananBack:test:BanananBack-test"
+      component: "Quorum:test:Quorum-test"

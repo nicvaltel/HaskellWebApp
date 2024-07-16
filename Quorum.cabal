@@ -4,11 +4,11 @@ cabal-version: 2.2
 --
 -- see: https://github.com/sol/hpack
 
-name:           BanananBack
+name:           Quorum
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/BanananBack#readme>
-homepage:       https://github.com/githubuser/BanananBack#readme
-bug-reports:    https://github.com/githubuser/BanananBack/issues
+description:    Please see the README on GitHub at <https://github.com/githubuser/Quorum#readme>
+homepage:       https://github.com/githubuser/Quorum#readme
+bug-reports:    https://github.com/githubuser/Quorum/issues
 author:         Author name here
 maintainer:     example@example.com
 copyright:      2024 Author name here
@@ -20,7 +20,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/BanananBack
+  location: https://github.com/githubuser/Quorum
 
 library
   exposed-modules:
@@ -36,9 +36,9 @@ library
       Reexport
       WebSocketServer
   other-modules:
-      Paths_BanananBack
+      Paths_Quorum
   autogen-modules:
-      Paths_BanananBack
+      Paths_Quorum
   hs-source-dirs:
       src
   default-extensions:
@@ -76,12 +76,12 @@ library
     , websockets
   default-language: Haskell2010
 
-executable BanananBack-exe
+executable Quorum-exe
   main-is: Main.hs
   other-modules:
-      Paths_BanananBack
+      Paths_Quorum
   autogen-modules:
-      Paths_BanananBack
+      Paths_Quorum
   hs-source-dirs:
       app
   default-extensions:
@@ -92,7 +92,7 @@ executable BanananBack-exe
       TemplateHaskell
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      BanananBack
+      Quorum
     , aeson
     , amqp
     , base >=4.7 && <5
@@ -120,13 +120,13 @@ executable BanananBack-exe
     , websockets
   default-language: Haskell2010
 
-test-suite BanananBack-test
+test-suite Quorum-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_BanananBack
+      Paths_Quorum
   autogen-modules:
-      Paths_BanananBack
+      Paths_Quorum
   hs-source-dirs:
       test
   default-extensions:
@@ -137,7 +137,7 @@ test-suite BanananBack-test
       TemplateHaskell
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      BanananBack
+      Quorum
     , aeson
     , amqp
     , base >=4.7 && <5
