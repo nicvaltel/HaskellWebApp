@@ -26,6 +26,8 @@ library
   exposed-modules:
       Adapter.InMemory.Auth
       Adapter.PostgreSQL.Auth
+      Adapter.RabbitMQ.Auth
+      Adapter.RabbitMQ.Common
       Adapter.Redis.Auth
       Domain.Auth
       Domain.Validation
@@ -47,20 +49,27 @@ library
       TemplateHaskell
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , amqp
+    , base >=4.7 && <5
     , bytestring
     , classy-prelude
+    , concurrency
     , containers
     , data-has
     , dotenv
     , either
+    , exceptions
     , hedis
     , katip
+    , mono-traversable
     , mtl
     , pcre-heavy
     , postgresql-simple
     , postgresql-simple-migration
     , resource-pool
+    , safe
+    , safe-exceptions
     , string-random
     , text
     , time
@@ -84,20 +93,27 @@ executable BanananBack-exe
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       BanananBack
+    , aeson
+    , amqp
     , base >=4.7 && <5
     , bytestring
     , classy-prelude
+    , concurrency
     , containers
     , data-has
     , dotenv
     , either
+    , exceptions
     , hedis
     , katip
+    , mono-traversable
     , mtl
     , pcre-heavy
     , postgresql-simple
     , postgresql-simple-migration
     , resource-pool
+    , safe
+    , safe-exceptions
     , string-random
     , text
     , time
@@ -122,20 +138,27 @@ test-suite BanananBack-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       BanananBack
+    , aeson
+    , amqp
     , base >=4.7 && <5
     , bytestring
     , classy-prelude
+    , concurrency
     , containers
     , data-has
     , dotenv
     , either
+    , exceptions
     , hedis
     , katip
+    , mono-traversable
     , mtl
     , pcre-heavy
     , postgresql-simple
     , postgresql-simple-migration
     , resource-pool
+    , safe
+    , safe-exceptions
     , string-random
     , text
     , time

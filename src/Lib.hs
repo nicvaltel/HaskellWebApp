@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Lib (runRoutine) where
 
@@ -10,19 +11,22 @@ import qualified Adapter.InMemory.Auth as Mem
 import qualified Adapter.PostgreSQL.Auth as PG
 import qualified Adapter.Redis.Auth as RDS
 import qualified Configuration.Dotenv as Dotenv
+import qualified Adapter.RabbitMQ.Common as MQ
+import qualified Adapter.RabbitMQ.Auth as MQAuth
 import qualified Data.Text as T
-
+import System.IO (readFile)
 
 import Katip (KatipContextT)
 import Logging (withKatip)
 import qualified Data.ByteString.Char8 as BSC8
+import Control.Exception.Safe (MonadThrow)
 
 
 
-type LibState = (PG.State, RDS.State, Mem.MemState)
+type LibState = (PG.State, RDS.State, MQ.State, Mem.MemState)
 
 newtype App a = App { unApp :: ReaderT LibState (KatipContextT IO) a  } 
-  deriving (Functor, Applicative, Monad, MonadReader LibState, MonadIO, MonadFail, KatipContext, Katip)
+  deriving (Functor, Applicative, Monad, MonadReader LibState, MonadIO, MonadFail, MonadThrow, MonadCatch, KatipContext, Katip)
 
 
 instance AuthRepo App where
@@ -32,7 +36,7 @@ instance AuthRepo App where
   findEmailFromUserId = App . PG.findEmailFromUserId
 
 instance EmailVerificationNotif App where
-  notifyEmailVerification email = App . Mem.notifyEmailVerification email
+  notifyEmailVerification email = App . MQAuth.notifyEmailVerification email
 
 instance SessionRepo App where
   newSession = App . RDS.newSession
@@ -47,6 +51,10 @@ runState le state =
   . flip runReaderT state 
   . unApp
   
+runState' :: LogEnv -> b -> ReaderT b (KatipContextT m) a -> m a
+runState' le state =
+  runKatipContextT le () mempty 
+  . flip runReaderT state 
   
 runRoutine :: IO ()
 runRoutine = do
@@ -57,8 +65,17 @@ runRoutine = do
     memState <- newTVarIO Mem.initialState
     PG.withState pgCfg $ \pgState ->
       RDS.withState redisCfg $ \redisState ->
-        runState le (pgState, redisState, memState) routine
+        MQ.withState mqCfg 16 $ \mqState -> do
+          let runner = runState' le (pgState, redisState, mqState, memState) 
+          MQAuth.init mqState runner
+          runner (unApp routine)
+          -- runState le (pgState, redisState, mqState, memState) routine
   where
+    -- App IO -> IO a => ReaderR... -> IO a
+    -- unApp App ... =>  ReaderT
+
+    mqCfg = "amqp://guest:guest@localhost:5672/%2F"
+
     readRedisConfig :: String -> IO (Either String String)
     readRedisConfig file = do
       env <- Dotenv.parseFile file
@@ -89,16 +106,25 @@ runRoutine = do
 
 routine :: App ()
 routine = do
-  let email = either undefined id $ mkEmail "salam14@mail.md"
+  emailFileContent <- liftIO $ T.pack <$> readFile "test-email.cfg"
+  liftIO $ putStrLn emailFileContent
+  let email = either undefined id $ mkEmail emailFileContent
   let passw = either undefined id $ mkPassword "123456Hello"
   let auth = Auth email passw
   _ <- register auth
-  Just vCode <- App $ Mem.getNotificationsForEmail email
+  vCode <- App $ pollNotif email
+  -- Just vCode <- App $ Mem.getNotificationsForEmail email
   _ <- verifyEmail vCode
   Right session <- login auth
   Just uId <- resolveSessionId session
   Just registeredEmail <- getUser uId
   liftIO $ print (session, uId, registeredEmail)
+  where
+    pollNotif email = do
+      result <- Mem.getNotificationsForEmail email
+      case result of
+        Nothing -> pollNotif email
+        Just vCode -> return vCode
 
 
 

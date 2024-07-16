@@ -38,6 +38,13 @@ dependencies:
 - hedis
 - dotenv
 - either
+- amqp
+- concurrency
+- aeson
+- exceptions
+- safe-exceptions
+- safe
+- mono-traversable
 
 default-extensions:
 - NoImplicitPrelude

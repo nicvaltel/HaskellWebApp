@@ -22,6 +22,12 @@ module Reexport
   , module Data.ByteString
   , module Data.Has
   , module Data.Either.Combinators
+  , module Control.Concurrent.Classy 
+  , module Control.Monad.Catch
+  , module Control.Exception.Safe
+  , module Data.Aeson
+  , module GHC.Generics
+
   ) where
 
 
@@ -47,9 +53,14 @@ import Katip (Katip(..), LogEnv(..), KatipContext(..), Severity(..), logTM, kati
   ColorStrategy (ColorIfTerminal), permitItem, Verbosity (V2), 
   registerScribe, defaultScribeSettings, initLogEnv, closeScribes, katipNoLogging)
 import System.IO (stdout)
-import Control.Exception (bracket, try)
+import Control.Exception (Exception (displayException),bracket, try)
 import Data.ByteString(ByteString)
 import Data.Has (Has (getter))
 import Data.Either.Combinators (maybeToRight)
+import Control.Concurrent.Classy (fork)
+import Control.Monad.Catch (MonadCatch)
+import Control.Exception.Safe (tryAny)
+import Data.Aeson ( ToJSON(..), FromJSON(..), eitherDecode', encode, decode )
+import GHC.Generics (Generic)
 
 
