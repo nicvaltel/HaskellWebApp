@@ -23,24 +23,24 @@ import qualified Adapter.HTTP.Main as HTTP
 
 
 
-type AppState = (PG.State, RDS.State, MQ.State, Mem.MemState)
+type AppState = (PG.State, RDS.State, MQ.State, TVar Mem.State) -- Try change Mem.MemState to TVar Mem.State
 
 newtype App a = App { unApp :: ReaderT AppState (KatipContextT IO) a  } 
-  deriving (Functor, Applicative, Monad, MonadReader AppState, MonadIO, MonadFail, MonadThrow, MonadCatch, KatipContext, Katip)
+  deriving (Functor, Applicative, Monad, MonadReader AppState, MonadIO, MonadUnliftIO, MonadFail, MonadThrow, MonadCatch, KatipContext, Katip)
 
 
 instance AuthRepo App where
-  addAuth = App . PG.addAuth
-  setEmailAsVerified = App . PG.setEmailAsVerified
-  findUserByAuth = App . PG.findUserByAuth
-  findEmailFromUserId = App . PG.findEmailFromUserId
+  addAuth = PG.addAuth
+  setEmailAsVerified = PG.setEmailAsVerified
+  findUserByAuth = PG.findUserByAuth
+  findEmailFromUserId = PG.findEmailFromUserId
 
 instance EmailVerificationNotif App where
-  notifyEmailVerification email = App . MQAuth.notifyEmailVerification email
+  notifyEmailVerification = MQAuth.notifyEmailVerification
 
 instance SessionRepo App where
-  newSession = App . RDS.newSession
-  findUserIdBySessionId = App . RDS.findUserIdBySessionId
+  newSession = RDS.newSession
+  findUserIdBySessionId = RDS.findUserIdBySessionId
 
 
 
@@ -105,9 +105,9 @@ withState action = do
 runRoutine :: IO ()
 runRoutine = do
   withState $ \port le appState@(_, _, mqState, _) -> do
-    let runner = runState le appState . App
+    let runner = runState le appState
     MQAuth.init mqState runner
-    -- HTTP.main port runner
+    HTTP.main port runner
 
 
 routine :: App ()

@@ -1,5 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ConstraintKinds #-}
 module Adapter.PostgreSQL.Auth
   ( Config(..)
   , State
@@ -18,12 +19,13 @@ import qualified Domain.Auth as D
 import Domain.Auth (Auth(authEmail,authPassword))
 import Data.ByteString (isInfixOf)
 import qualified Data.Text as T
+import Control.Exception.Safe (MonadThrow)
 
 
 
 type State = Pool Connection
 
-type PG r m a = (MonadIO m, Has State r) => ReaderT r m a
+type PG r m = (Has State r, MonadReader r m, MonadIO m, MonadThrow m)
 
 data Config = Config
   { configUrl :: ByteString
@@ -32,12 +34,12 @@ data Config = Config
   , congigIdleConnTimeout :: Double --in seconds NominalDiffTime
   }
 
-withConn :: (Connection -> IO a) -> PG r m a
+withConn :: PG r m => (Connection -> IO a) -> m a
 withConn action = do
   pool <- asks getter
   liftIO . withResource pool $ \conn -> action conn
 
-addAuth :: D.Auth -> PG r m (Either D.RegistrationError (D.UserId, D.VerificationCode))
+addAuth :: PG r m => D.Auth -> m (Either D.RegistrationError (D.UserId, D.VerificationCode))
 addAuth D.Auth{authEmail, authPassword} = do
   let rawEmail = D.rawEmail authEmail
   let rawPassword = D.rawPassword authPassword
@@ -62,7 +64,7 @@ addAuth D.Auth{authEmail, authPassword} = do
             \values (?, crypt(?, gen_salt('bf')),?,'f') returning id"
 
 
-setEmailAsVerified :: D.VerificationCode -> PG r m (Either D.EmailVerificationError (D.UserId, D.Email))
+setEmailAsVerified :: PG r m => D.VerificationCode -> m (Either D.EmailVerificationError (D.UserId, D.Email))
 setEmailAsVerified vCode = do
     result <- withConn $ \conn -> query conn qry (Only vCode)
     case result of
@@ -76,7 +78,7 @@ setEmailAsVerified vCode = do
               \where email_verification_code = ? \
               \returning id, cast (email as text)"
 
-findUserByAuth :: D.Auth -> PG r m (Maybe (D.UserId, Bool)) -- Bool = email is verified
+findUserByAuth :: PG r m => D.Auth -> m (Maybe (D.UserId, Bool)) -- Bool = email is verified
 findUserByAuth D.Auth{authEmail, authPassword} = do
   let rawEmail = D.rawEmail authEmail
   let rawPassword = D.rawPassword authPassword
@@ -87,7 +89,7 @@ findUserByAuth D.Auth{authEmail, authPassword} = do
   where
     qry = "select id, is_email_verified from auths where email = ? and pass = crypt(?, pass)"
 
-findEmailFromUserId :: D.UserId -> PG r m (Maybe D.Email)
+findEmailFromUserId :: PG r m => D.UserId -> m (Maybe D.Email)
 findEmailFromUserId uId = do
   result <- withConn $ \conn -> query conn qry (Only uId)
   case result of
