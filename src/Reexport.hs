@@ -27,6 +27,7 @@ module Reexport
   , module Control.Exception.Safe
   , module Data.Aeson
   , module GHC.Generics
+  , module Data.Time
 
   ) where
 
@@ -44,7 +45,7 @@ import Data.Set(Set)
 import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Reader (MonadReader(..),ReaderT, ask, asks, runReaderT)
 import GHC.Conc (TVar, readTVar, readTVarIO, atomically, writeTVar, newTVar, newTVarIO)
-import ClassyPrelude (MonoFoldable, tshow, asText, throwString)
+import ClassyPrelude (MonoFoldable, MonadUnliftIO, tshow, asText, throwString)
 import Text.StringRandom (stringRandomIO)
 import Data.Tuple (swap)
 import Data.List (find)
@@ -53,7 +54,7 @@ import Katip (Katip(..), LogEnv(..), KatipContext(..), Severity(..), logTM, kati
   ColorStrategy (ColorIfTerminal), permitItem, Verbosity (V2), 
   registerScribe, defaultScribeSettings, initLogEnv, closeScribes, katipNoLogging)
 import System.IO (stdout)
-import Control.Exception (Exception (displayException),bracket, try)
+import Control.Exception (Exception (displayException),SomeException, bracket, try)
 import Data.ByteString(ByteString)
 import Data.Has (Has (getter))
 import Data.Either.Combinators (maybeToRight)
@@ -62,5 +63,4 @@ import Control.Monad.Catch (MonadCatch)
 import Control.Exception.Safe (tryAny)
 import Data.Aeson ( ToJSON(..), FromJSON(..), eitherDecode', encode, decode )
 import GHC.Generics (Generic)
-
-
+import Data.Time (getCurrentTime)

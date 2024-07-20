@@ -1,5 +1,6 @@
 .stack-work/
 dist-newstyle/
 db/postgres
+depends/
 **/*.env
 *~

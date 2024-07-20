@@ -24,6 +24,9 @@ source-repository head
 
 library
   exposed-modules:
+      Adapter.HTTP.API.Auth
+      Adapter.HTTP.Common
+      Adapter.HTTP.Main
       Adapter.InMemory.Auth
       Adapter.PostgreSQL.Auth
       Adapter.RabbitMQ.Auth
@@ -52,15 +55,20 @@ library
       aeson
     , amqp
     , base >=4.7 && <5
+    , blaze-builder
     , bytestring
     , classy-prelude
     , concurrency
     , containers
+    , cookie
     , data-has
+    , digestive-functors
+    , digestive-functors-aeson
     , dotenv
     , either
     , exceptions
     , hedis
+    , http-types
     , katip
     , mono-traversable
     , mtl
@@ -70,9 +78,13 @@ library
     , resource-pool
     , safe
     , safe-exceptions
+    , scotty
     , string-random
     , text
     , time
+    , time-lens
+    , wai
+    , wai-extra
     , websockets
   default-language: Haskell2010
 
@@ -96,15 +108,20 @@ executable Quorum-exe
     , aeson
     , amqp
     , base >=4.7 && <5
+    , blaze-builder
     , bytestring
     , classy-prelude
     , concurrency
     , containers
+    , cookie
     , data-has
+    , digestive-functors
+    , digestive-functors-aeson
     , dotenv
     , either
     , exceptions
     , hedis
+    , http-types
     , katip
     , mono-traversable
     , mtl
@@ -114,9 +131,13 @@ executable Quorum-exe
     , resource-pool
     , safe
     , safe-exceptions
+    , scotty
     , string-random
     , text
     , time
+    , time-lens
+    , wai
+    , wai-extra
     , websockets
   default-language: Haskell2010
 
@@ -141,15 +162,20 @@ test-suite Quorum-test
     , aeson
     , amqp
     , base >=4.7 && <5
+    , blaze-builder
     , bytestring
     , classy-prelude
     , concurrency
     , containers
+    , cookie
     , data-has
+    , digestive-functors
+    , digestive-functors-aeson
     , dotenv
     , either
     , exceptions
     , hedis
+    , http-types
     , katip
     , mono-traversable
     , mtl
@@ -159,8 +185,12 @@ test-suite Quorum-test
     , resource-pool
     , safe
     , safe-exceptions
+    , scotty
     , string-random
     , text
     , time
+    , time-lens
+    , wai
+    , wai-extra
     , websockets
   default-language: Haskell2010

@@ -14,19 +14,19 @@ import qualified Configuration.Dotenv as Dotenv
 import qualified Adapter.RabbitMQ.Common as MQ
 import qualified Adapter.RabbitMQ.Auth as MQAuth
 import qualified Data.Text as T
-import System.IO (readFile)
 
 import Katip (KatipContextT)
 import Logging (withKatip)
 import qualified Data.ByteString.Char8 as BSC8
 import Control.Exception.Safe (MonadThrow)
+import qualified Adapter.HTTP.Main as HTTP
 
 
 
-type LibState = (PG.State, RDS.State, MQ.State, Mem.MemState)
+type AppState = (PG.State, RDS.State, MQ.State, Mem.MemState)
 
-newtype App a = App { unApp :: ReaderT LibState (KatipContextT IO) a  } 
-  deriving (Functor, Applicative, Monad, MonadReader LibState, MonadIO, MonadFail, MonadThrow, MonadCatch, KatipContext, Katip)
+newtype App a = App { unApp :: ReaderT AppState (KatipContextT IO) a  } 
+  deriving (Functor, Applicative, Monad, MonadReader AppState, MonadIO, MonadFail, MonadThrow, MonadCatch, KatipContext, Katip)
 
 
 instance AuthRepo App where
@@ -45,7 +45,7 @@ instance SessionRepo App where
 
 
 
-runState :: LogEnv -> LibState -> App a -> IO a
+runState :: LogEnv -> AppState -> App a -> IO a
 runState le state =
   runKatipContextT le () mempty 
   . flip runReaderT state 
@@ -56,24 +56,21 @@ runState' le state =
   runKatipContextT le () mempty 
   . flip runReaderT state 
   
-runRoutine :: IO ()
-runRoutine = do
+withState :: (Int -> LogEnv -> AppState -> IO ()) -> IO()
+withState action = do
   pgCfg <- either error id <$> readDBConfig "db/database.env"
-
   redisCfg <- either error id <$> readRedisConfig "redis/database.env"
+  let port = 3000
+
   withKatip $ \le -> do 
     memState <- newTVarIO Mem.initialState
     PG.withState pgCfg $ \pgState ->
       RDS.withState redisCfg $ \redisState ->
         MQ.withState mqCfg 16 $ \mqState -> do
-          let runner = runState' le (pgState, redisState, mqState, memState) 
-          MQAuth.init mqState runner
-          runner (unApp routine)
-          -- runState le (pgState, redisState, mqState, memState) routine
-  where
-    -- App IO -> IO a => ReaderR... -> IO a
-    -- unApp App ... =>  ReaderT
+          let appState = (pgState, redisState, mqState, memState) 
+          action port le appState 
 
+    where
     mqCfg = "amqp://guest:guest@localhost:5672/%2F"
 
     readRedisConfig :: String -> IO (Either String String)
@@ -103,6 +100,15 @@ runRoutine = do
             let configUrl :: String  = printf "postgresql://%s:%s@%s:%d/%s" dbUser dbPassword dbHost dbPort dbName 
             pure PG.Config {PG.configUrl = BSC8.pack configUrl, PG.configStripeCount = configStripeCount, PG.configMaxOpenConnPerStripe = dbMaxOpenConnPerStripe, PG.congigIdleConnTimeout = dbIdleConnTimeout}
       pure result
+
+
+runRoutine :: IO ()
+runRoutine = do
+  withState $ \port le appState@(_, _, mqState, _) -> do
+    let runner = runState le appState . App
+    MQAuth.init mqState runner
+    -- HTTP.main port runner
+
 
 routine :: App ()
 routine = do

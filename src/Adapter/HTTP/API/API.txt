@@ -1,0 +1,76 @@
+Registration:
+  Request:
+    POST /api/auth/register
+    { "email": "abc@def.com"
+    , "password": "abcDEF123"
+    }
+
+  Responce:
+    Wrong email or password format:
+      400
+      { "email": "errmsg"
+      , "password": "errmsg"
+      }
+
+    Email taken:
+      400
+      "EmailTaken"
+
+    Success:
+      200
+
+Email verification:
+  Request:
+    POST /api/auth/verifyEmail
+    "verificationCode"
+  
+  Responce:
+    Invalid input:
+      400
+      "required"
+
+    Invalid code:
+      400
+      "InvalidCode"
+
+    Success:
+      200
+
+Login:
+  Request:
+    POST /api/auth/login
+    { "email": "abc@def.com
+    , "password": "abcDEF123"
+    }
+
+  Responce:
+    Invalid input:
+      400
+      { "email": "errmsg"
+      , "password": "errmsg"
+      }
+
+  Invalid auth:
+    400
+    "InvalidAuth"
+
+  Email not yet verifyed:
+    400
+    "EmailNotVerified"
+
+  Success:
+    200
+
+
+Get User:
+  Request:
+    GET /api/users
+
+  Responce:
+    Not authenticated:
+      401
+        "AuthRequired"
+    
+    Success:
+      200
+      "abc@def"

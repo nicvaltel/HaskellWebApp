@@ -9,6 +9,7 @@ module Domain.Auth
   , EmailVerificationNotif(..)
   , SessionRepo(..)
   , EmailVerificationError(..)
+  , LoginError(..)
   , VerificationCode
   , SessionId
   , UserId
