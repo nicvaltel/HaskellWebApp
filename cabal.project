@@ -1,6 +1,7 @@
 packages: .
           -- depends/postgresql-simple-migration
           depends/digestive-functors-aeson
+          depends/digestive-functors-scotty
 
 source-repository-package
     type: git

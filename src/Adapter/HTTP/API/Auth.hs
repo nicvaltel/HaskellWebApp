@@ -7,8 +7,7 @@ import qualified Text.Digestive.Form as DF
 import Text.Digestive.Form ((.:))
 import Adapter.HTTP.Common
 import Network.HTTP.Types.Status
-import Data.Aeson hiding (json, (.:))
-import Katip
+import Adapter.HTTP.API.Common
 
 
 authForm :: Monad m => DF.Form [Text] m Auth
@@ -27,7 +26,7 @@ verifyEmailForm = DF.text Nothing
 routes :: (MonadUnliftIO m, KatipContext m, AuthRepo m, EmailVerificationNotif m, SessionRepo m) => ScottyT m ()
 routes = do
   -- register
-  post "api/auth/register" $ do
+  post "/api/auth/register" $ do
     input <- parseAndValidateJSON authForm
     domainResult <- lift $ register input
     case domainResult of
@@ -47,7 +46,7 @@ routes = do
       Right _ -> pure ()
 
   -- login 
-  post "api/auth/login" $ do
+  post "/api/auth/login" $ do
     input <- parseAndValidateJSON authForm
     domainResult <- lift $ login input
     case domainResult of
@@ -62,7 +61,7 @@ routes = do
         pure ()
 
   -- get user
-  get "api/users" $ do
+  get "/api/users" $ do
     userId <- reqCurrentUserId
     mayEmail <- lift $ getUser userId
     case mayEmail of

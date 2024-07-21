@@ -21,19 +21,6 @@ import Data.Time.Lens
 toResult :: Either e a -> DF.Result e a
 toResult = either DF.Error DF.Success
 
-
-parseAndValidateJSON :: (MonadUnliftIO m, ToJSON v) => DF.Form v m a -> ActionT m a
-parseAndValidateJSON form = do
-  val <- jsonData `catch` (\(_:: SomeException) -> pure Null)
-  validataionResult <- lift $ DF.digestJSON form val
-  case validataionResult of
-    (v, Nothing) -> do
-      status status400
-      json $ DF.jsonErrors v
-      finish
-    (_, Just result) -> pure result
-
-
 setCookie :: MonadIO m => SetCookie -> ActionT m ()
 setCookie = setHeader "Set-Cookie" . decodeUtf8 . toLazyByteString . renderSetCookie
 
@@ -68,13 +55,3 @@ getCurrentUserId = do
     Nothing -> pure Nothing
     Just sId -> lift $ resolveSessionId sId
 
-reqCurrentUserId :: (SessionRepo m, MonadIO m) => ActionT m UserId
-reqCurrentUserId = do
-  mayUser <- getCurrentUserId
-  case mayUser of
-    Nothing -> do
-      status status401
-      json ("AuthRequired" :: Text)
-      finish
-    Just userId ->
-      pure userId
