@@ -1,9 +1,9 @@
 packages: .
-          -- depends/postgresql-simple-migration
+          depends/postgresql-simple-migration
           depends/digestive-functors-aeson
           depends/digestive-functors-scotty
 
-source-repository-package
-    type: git
-    location: https://github.com/nicvaltel/postgresql-simple-migration.git
-    tag: f714f048106b3e7f15108d7200c5912a2087fe2e
+-- source-repository-package
+--     type: git
+--     location: https://github.com/nicvaltel/postgresql-simple-migration.git
+--     tag: f714f048106b3e7f15108d7200c5912a2087fe2e

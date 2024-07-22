@@ -1,10 +1,10 @@
 cradle:
   cabal:
     - path: "src"
-      component: "lib:Quorum"
+      component: "lib:HaskellWebApp"
 
     - path: "app/Main.hs"
-      component: "Quorum:exe:Quorum-exe"
+      component: "HaskellWebApp:exe:HaskellWebApp-exe"
 
     - path: "test"
-      component: "Quorum:test:Quorum-test"
+      component: "HaskellWebApp:test:HaskellWebApp-test"
