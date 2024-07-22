@@ -28,7 +28,7 @@ module Reexport
   , module Data.Aeson
   , module GHC.Generics
   , module Data.Time
-
+  , module Data.Data
   ) where
 
 
@@ -59,8 +59,9 @@ import Data.ByteString(ByteString)
 import Data.Has (Has (getter))
 import Data.Either.Combinators (maybeToRight)
 import Control.Concurrent.Classy (fork)
-import Control.Monad.Catch (MonadCatch)
+import Control.Monad.Catch (MonadCatch, MonadThrow)
 import Control.Exception.Safe (tryAny)
 import Data.Aeson ( ToJSON(..), FromJSON(..), eitherDecode', encode, decode )
 import GHC.Generics (Generic)
 import Data.Time (getCurrentTime)
+import Data.Data (Typeable)

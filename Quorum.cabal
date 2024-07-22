@@ -25,10 +25,15 @@ source-repository head
 library
   exposed-modules:
       Adapter.HTTP.API.Auth
+      Adapter.HTTP.API.Client.Auth
+      Adapter.HTTP.API.Client.Common
       Adapter.HTTP.API.Common
       Adapter.HTTP.API.Main
+      Adapter.HTTP.API.Types.AesonHelper
+      Adapter.HTTP.API.Types.Auth
       Adapter.HTTP.Common
       Adapter.HTTP.Main
+      Adapter.HTTP.Web.Auth
       Adapter.HTTP.Web.Common
       Adapter.HTTP.Web.Main
       Adapter.InMemory.Auth
@@ -40,6 +45,8 @@ library
       Domain.Validation
       Lib
       Logging
+      PlayGround.HTTP
+      PlayGround.Scotty
       Reexport
       WebSocketServer
   other-modules:
@@ -75,6 +82,9 @@ library
     , either
     , exceptions
     , hedis
+    , http-client
+    , http-client-conduit
+    , http-client-tls
     , http-types
     , katip
     , mono-traversable
@@ -82,11 +92,13 @@ library
     , pcre-heavy
     , postgresql-simple
     , postgresql-simple-migration
+    , req
     , resource-pool
     , safe
     , safe-exceptions
     , scotty
     , string-random
+    , template-haskell
     , text
     , time
     , time-lens
@@ -95,6 +107,7 @@ library
     , wai-middleware-static
     , warp
     , websockets
+    , wreq
   default-language: Haskell2010
 
 executable Quorum-exe
@@ -133,6 +146,9 @@ executable Quorum-exe
     , either
     , exceptions
     , hedis
+    , http-client
+    , http-client-conduit
+    , http-client-tls
     , http-types
     , katip
     , mono-traversable
@@ -140,11 +156,13 @@ executable Quorum-exe
     , pcre-heavy
     , postgresql-simple
     , postgresql-simple-migration
+    , req
     , resource-pool
     , safe
     , safe-exceptions
     , scotty
     , string-random
+    , template-haskell
     , text
     , time
     , time-lens
@@ -153,6 +171,7 @@ executable Quorum-exe
     , wai-middleware-static
     , warp
     , websockets
+    , wreq
   default-language: Haskell2010
 
 test-suite Quorum-test
@@ -192,6 +211,9 @@ test-suite Quorum-test
     , either
     , exceptions
     , hedis
+    , http-client
+    , http-client-conduit
+    , http-client-tls
     , http-types
     , katip
     , mono-traversable
@@ -199,11 +221,13 @@ test-suite Quorum-test
     , pcre-heavy
     , postgresql-simple
     , postgresql-simple-migration
+    , req
     , resource-pool
     , safe
     , safe-exceptions
     , scotty
     , string-random
+    , template-haskell
     , text
     , time
     , time-lens
@@ -212,4 +236,5 @@ test-suite Quorum-test
     , wai-middleware-static
     , warp
     , websockets
+    , wreq
   default-language: Haskell2010

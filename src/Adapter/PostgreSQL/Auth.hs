@@ -19,8 +19,6 @@ import qualified Domain.Auth as D
 import Domain.Auth (Auth(authEmail,authPassword))
 import Data.ByteString (isInfixOf)
 import qualified Data.Text as T
-import Control.Exception.Safe (MonadThrow)
-
 
 
 type State = Pool Connection

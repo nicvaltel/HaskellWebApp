@@ -7,26 +7,30 @@ import Domain.Auth
 import ClassyPrelude
 import Web.Scotty.Trans
 import Network.HTTP.Types.Status
-import qualified Adapter.HTTP.API.Auth as Auth
-import Adapter.HTTP.API.Common
-import Katip
+
 import Network.Wai
 import Network.Wai.Middleware.Gzip
-
+import Network.Wai.Middleware.Static (staticPolicy', CacheContainer, addBase, initCaching, CachingStrategy (..))
+import qualified Adapter.HTTP.Web.Auth as WebAuth
 
 
 main :: 
   (MonadUnliftIO m, KatipContext m, AuthRepo m, EmailVerificationNotif m, SessionRepo m) =>
   (m Response -> IO Response) -> IO Application
-main runner = scottyAppT defaultOptions runner routes
+main runner = do
+  cacheContainer <- initCaching PublicStaticCaching
+  scottyAppT defaultOptions runner $ routes cacheContainer
+  -- scottyAppT defaultOptions runner routes
 
 routes :: 
-  ( MonadUnliftIO m, KatipContext m, AuthRepo m , EmailVerificationNotif m, SessionRepo m) =>
-  ScottyT m ()
-routes = do
+  ( MonadUnliftIO m, KatipContext m, AuthRepo m, EmailVerificationNotif m, SessionRepo m) =>
+  CacheContainer -> ScottyT m ()
+routes cachingStrategy= do
 
-  get "/" $
-    text "Hello from web!"
+  middleware $ gzip $ def {gzipFiles = GzipCompress}
+  middleware $ staticPolicy' cachingStrategy (addBase "src/Adapter/HTTP/Web")
+
+  WebAuth.routes
 
   notFound $ do
     status status404

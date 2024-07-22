@@ -59,6 +59,12 @@ dependencies:
 - digestive-functors-scotty
 - wai-middleware-static
 - warp
+- template-haskell
+- http-client
+- http-client-tls
+- http-client-conduit
+- req
+- wreq
 
 default-extensions:
 - NoImplicitPrelude

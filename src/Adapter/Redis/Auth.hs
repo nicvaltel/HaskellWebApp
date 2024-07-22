@@ -15,7 +15,6 @@ import qualified Database.Redis as R
 import Data.Text.Encoding (encodeUtf8)
 import ClassyPrelude (fromString, Utf8 (decodeUtf8), readMay)
 import qualified Data.Text as T
-import Control.Exception.Safe (MonadThrow)
 
 
 type State = R.Connection

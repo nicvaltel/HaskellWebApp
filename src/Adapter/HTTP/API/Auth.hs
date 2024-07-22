@@ -8,6 +8,7 @@ import Text.Digestive.Form ((.:))
 import Adapter.HTTP.Common
 import Network.HTTP.Types.Status
 import Adapter.HTTP.API.Common
+import Adapter.HTTP.API.Types.Auth -- need for ophran instances
 
 
 authForm :: Monad m => DF.Form [Text] m Auth
@@ -30,9 +31,9 @@ routes = do
     input <- parseAndValidateJSON authForm
     domainResult <- lift $ register input
     case domainResult of
-      Left RegistrationErrorEmailTaken -> do
+      Left err -> do
         status status400
-        json ("EmailTaken" :: Text)
+        json err
       Right _ -> pure ()
 
   -- verify email
@@ -40,9 +41,9 @@ routes = do
     input <- parseAndValidateJSON verifyEmailForm
     domainResult <- lift $ verifyEmail input
     case domainResult of
-      Left EmailVerificationErrorInvalidCode -> do
+      Left err -> do
         status status400
-        json ("InvalidCode" :: Text)
+        json err
       Right _ -> pure ()
 
   -- login 
@@ -50,12 +51,9 @@ routes = do
     input <- parseAndValidateJSON authForm
     domainResult <- lift $ login input
     case domainResult of
-      Left LoginErrorInvalidAuth -> do
+      Left err -> do
         status status400
-        json ("InvalidAuth" :: Text)
-      Left LoginErrorEmailNotVerified -> do
-        status status400
-        json ("EmailNotVerified" :: Text)
+        json err
       Right sId -> do
         setSessionIdInCookie sId
         pure ()

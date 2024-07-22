@@ -18,7 +18,6 @@ import qualified Data.Text as T
 import Katip (KatipContextT)
 import Logging (withKatip)
 import qualified Data.ByteString.Char8 as BSC8
-import Control.Exception.Safe (MonadThrow)
 import qualified Adapter.HTTP.Main as HTTP
 
 
